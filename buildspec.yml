@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Starting pre-build..."
+      - echo "Getting CodeArtifact token..."
+      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain amal --domain-owner $AWS_ACCOUNT_ID --region $AWS_DEFAULT_REGION --query authorizationToken --output text`
+      - echo "Building pip index url..."
+      - export PIP_INDEX_URL="https://aws:$CODEARTIFACT_AUTH_TOKEN@amal-$AWS_ACCOUNT-ID.d.codeartifact.$AWS_DEFAULT_REGION.amazonaws.com/pypi/python/simple/"
+      - echo "Login to ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo "Starting build..."
+      - echo "Building docker image..."
+      - docker build -t docker-image:$CODEBUILD_BUILD_NUMBER --build-arg PIP_INDEX_URL .
+      - docker tag docker-image:$CODEBUILD_BUILD_NUMBER $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/flask-app:$CODEBUILD_BUILD_NUMBER
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo "Pushing the Docker image...""
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/flask-app:$CODEBUILD_BUILD_NUMBER
