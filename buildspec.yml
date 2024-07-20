@@ -18,8 +18,9 @@ phases:
       - echo "Building docker image..."
       - docker build -t docker-image:$CODEBUILD_BUILD_NUMBER --build-arg PIP_INDEX_URL .
       - docker tag docker-image:$CODEBUILD_BUILD_NUMBER $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/flask-app:$CODEBUILD_BUILD_NUMBER
+      - docker images
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo "Pushing the Docker image...""
+      - echo "Pushing the Docker image..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/flask-app:$CODEBUILD_BUILD_NUMBER
