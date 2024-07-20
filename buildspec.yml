@@ -8,7 +8,7 @@ phases:
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain amal --domain-owner $AWS_ACCOUNT_ID --region $AWS_DEFAULT_REGION --query authorizationToken --output text`
       - echo $CODEARTIFACT_AUTH_TOKEN
       - echo "Building pip index url..."
-      - export PIP_INDEX_URL=`https://aws:$CODEARTIFACT_AUTH_TOKEN@amal-$AWS_ACCOUNT_ID.d.codeartifact.$AWS_DEFAULT_REGION.amazonaws.com/pypi/python/simple/`
+      - export PIP_INDEX_URL="https://aws:${CODEARTIFACT_AUTH_TOKEN}@amal-${AWS_ACCOUNT_ID}.d.codeartifact.${AWS_DEFAULT_REGION}.amazonaws.com/pypi/python/simple/"
       - echo $PIP_INDEX_URL
       - echo "Login to ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
