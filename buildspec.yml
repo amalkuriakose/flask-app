@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   exported-variables:
-    - CODEBUILD_BUILD_NUMBER
-    
+    - IMAGE_WITH_TAG
+
 phases:
   pre_build:
     commands:
@@ -16,6 +16,8 @@ phases:
       - echo $PIP_INDEX_URL
       - echo "Login to ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - IMAGE_WITH_TAG=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/flask-app:$CODEBUILD_BUILD_NUMBER
+      - echo IMAGE_WITH_TAG $IMAGE_WITH_TAG
   build:
     commands:
       - echo "Starting build..."
